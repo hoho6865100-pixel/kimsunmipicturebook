@@ -1,6 +1,9 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    { "source": "/google889fe3f92bca37f5.html", "destination": "/google889fe3f92bca37f5.html" }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
