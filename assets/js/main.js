@@ -98,6 +98,36 @@
     el.textContent = new Date().getFullYear();
   });
 
+  // ---- 외부 링크 자동 처리: 같은 사이트가 아니면 새 탭 + rel="noopener noreferrer" ----
+  // 내부 페이지 이동, 뒤로가기 등 브라우저 기본 탐색 동작은 건드리지 않습니다.
+  var applyExternalLinkAttrs = function () {
+    var currentHost = window.location.hostname.replace(/^www\./, "");
+    document.querySelectorAll("a[href]").forEach(function (link) {
+      var href = link.getAttribute("href");
+      if (!href || href.charAt(0) === "#") return;
+
+      var url;
+      try {
+        url = new URL(href, window.location.href);
+      } catch (e) {
+        return;
+      }
+
+      if (url.protocol !== "http:" && url.protocol !== "https:") return;
+
+      var linkHost = url.hostname.replace(/^www\./, "");
+      if (linkHost === currentHost) return;
+
+      link.setAttribute("target", "_blank");
+      var relTokens = (link.getAttribute("rel") || "").split(/\s+/).filter(Boolean);
+      ["noopener", "noreferrer"].forEach(function (token) {
+        if (relTokens.indexOf(token) === -1) relTokens.push(token);
+      });
+      link.setAttribute("rel", relTokens.join(" "));
+    });
+  };
+  applyExternalLinkAttrs();
+
   // ---- 해시로 연결된 FAQ 항목 자동 펼치기 (예: /faq#faq-havruta) ----
   var openTargetFromHash = function () {
     if (!window.location.hash) return;
