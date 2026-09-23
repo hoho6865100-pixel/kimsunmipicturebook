@@ -26,22 +26,29 @@
   var reviewFilterBar = document.querySelector("[data-review-filter]");
   if (reviewFilterBar) {
     var reviewCards = document.querySelectorAll("[data-review-type]");
+    var applyReviewFilter = function (type) {
+      var matched = false;
+      reviewFilterBar.querySelectorAll(".filter-btn").forEach(function (b) {
+        var active = b.getAttribute("data-filter") === type;
+        if (active) matched = true;
+        b.classList.toggle("is-active", active);
+        b.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+      if (!matched) return;
+      reviewCards.forEach(function (card) {
+        var types = (card.getAttribute("data-review-type") || "").split(",");
+        var show = type === "all" || types.indexOf(type) !== -1;
+        card.style.display = show ? "" : "none";
+      });
+    };
     reviewFilterBar.querySelectorAll(".filter-btn").forEach(function (btn) {
       btn.addEventListener("click", function () {
-        reviewFilterBar.querySelectorAll(".filter-btn").forEach(function (b) {
-          b.classList.remove("is-active");
-          b.setAttribute("aria-pressed", "false");
-        });
-        btn.classList.add("is-active");
-        btn.setAttribute("aria-pressed", "true");
-        var type = btn.getAttribute("data-filter");
-        reviewCards.forEach(function (card) {
-          var types = (card.getAttribute("data-review-type") || "").split(",");
-          var show = type === "all" || types.indexOf(type) !== -1;
-          card.style.display = show ? "" : "none";
-        });
+        applyReviewFilter(btn.getAttribute("data-filter"));
       });
     });
+    // 다른 페이지에서 /testimonials?type=부모교육 형태로 들어오면 해당 필터를 자동 적용합니다.
+    var requestedType = new URLSearchParams(window.location.search).get("type");
+    if (requestedType) applyReviewFilter(requestedType);
   }
 
   // ---- 강의문의 폼: 메일 클라이언트로 전달 ----
