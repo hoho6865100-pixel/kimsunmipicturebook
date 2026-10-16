@@ -51,55 +51,6 @@
     if (requestedType) applyReviewFilter(requestedType);
   }
 
-  // ---- 강의문의 폼: 메일 클라이언트로 전달 ----
-  var contactForm = document.getElementById("lecture-inquiry-form");
-  if (contactForm) {
-    contactForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var data = new FormData(contactForm);
-      var get = function (k) { return (data.get(k) || "").toString().trim(); };
-
-      if (!contactForm.checkValidity()) {
-        contactForm.reportValidity();
-        return;
-      }
-
-      var targetEmail = contactForm.getAttribute("data-contact-email") || "";
-      var lines = [
-        "기관명: " + get("org"),
-        "담당자: " + get("manager"),
-        "연락처: " + get("phone"),
-        "이메일: " + get("email"),
-        "교육대상: " + get("audience"),
-        "예상인원: " + get("headcount"),
-        "희망일: " + get("date"),
-        "희망시간: " + get("time"),
-        "교육주제: " + get("topic"),
-        "",
-        "문의내용:",
-        get("message")
-      ];
-      var subject = encodeURIComponent("[강의문의] " + (get("org") || "기관명 미입력"));
-      var body = encodeURIComponent(lines.join("\n"));
-
-      var statusEl = document.getElementById("form-status");
-
-      if (!targetEmail || targetEmail.indexOf("@") === -1) {
-        if (statusEl) {
-          statusEl.textContent = "문의 접수 이메일이 아직 연결되지 않았습니다. 담당자 이메일이 등록되면 이 버튼으로 바로 메일이 전송됩니다. 지금은 강의문의 페이지에 안내된 연락처로 직접 문의해 주세요.";
-          statusEl.hidden = false;
-        }
-        return;
-      }
-
-      window.location.href = "mailto:" + targetEmail + "?subject=" + subject + "&body=" + body;
-      if (statusEl) {
-        statusEl.textContent = "메일 작성 화면으로 이동합니다. 메일 프로그램이 열리지 않으면 위 이메일 주소로 직접 문의 내용을 보내주세요.";
-        statusEl.hidden = false;
-      }
-    });
-  }
-
   // ---- 푸터 연도 자동 갱신 ----
   document.querySelectorAll("[data-current-year]").forEach(function (el) {
     el.textContent = new Date().getFullYear();
